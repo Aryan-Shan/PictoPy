@@ -139,3 +139,6 @@ images/
 dist/*
 !dist/README.md
 tests/inputs/PictoPy.thumbnails/
+app/models/ONNX_Exports/
+search_index.faiss
+search_ids.pkl

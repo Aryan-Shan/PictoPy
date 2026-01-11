@@ -396,6 +396,55 @@ def db_delete_images_by_ids(image_ids: List[ImageId]) -> bool:
         conn.close()
 
 
+
+def db_get_images_by_ids(image_ids: List[str]) -> List[dict]:
+    """
+    Get image details for a list of image IDs.
+    Returns list of dicts.
+    """
+    if not image_ids:
+        return []
+
+    conn = _connect()
+    cursor = conn.cursor()
+
+    try:
+        placeholders = ",".join("?" for _ in image_ids)
+        query = f"""
+            SELECT id, path, folder_id, thumbnailPath, metadata, isTagged, isFavourite
+            FROM images
+            WHERE id IN ({placeholders})
+        """
+        cursor.execute(query, image_ids)
+        results = cursor.fetchall()
+        
+        images_map = {}
+        for row in results:
+             from app.utils.images import image_util_parse_metadata
+             images_map[row[0]] = {
+                "id": row[0],
+                "path": row[1],
+                "folder_id": str(row[2]),
+                "thumbnailPath": row[3],
+                "metadata": image_util_parse_metadata(row[4]),
+                "isTagged": bool(row[5]),
+                "isFavourite": bool(row[6])
+             }
+        
+        # Return in order of input IDs
+        ordered_images = []
+        for img_id in image_ids:
+            if img_id in images_map:
+                ordered_images.append(images_map[img_id])
+                
+        return ordered_images
+    except Exception as e:
+        logger.error(f"Error getting images by IDs: {e}")
+        return []
+    finally:
+        conn.close()
+
+
 def db_toggle_image_favourite_status(image_id: str) -> bool:
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()

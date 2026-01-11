@@ -27,6 +27,10 @@ export const userPreferencesEndpoints = {
   updateUserPreferences: '/user-preferences/',
 };
 
+export const searchEndpoints = {
+  search: '/search/',
+};
+
 export const healthEndpoints = {
   healthCheck: '/health',
 };

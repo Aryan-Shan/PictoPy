@@ -2,6 +2,8 @@ import { Input } from '@/components/ui/input';
 import { ThemeSelector } from '@/components/ThemeToggle';
 import { Search } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { useState } from 'react';
 import { selectAvatar, selectName } from '@/features/onboardingSelectors';
 import { clearSearch } from '@/features/searchSlice';
 import { convertFileSrc } from '@tauri-apps/api/core';
@@ -10,6 +12,14 @@ import { FaceSearchDialog } from '@/components/Dialog/FaceSearchDialog';
 export function Navbar() {
   const userName = useSelector(selectName);
   const userAvatar = useSelector(selectAvatar);
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchValue)}`);
+    }
+  };
 
   const searchState = useSelector((state: any) => state.search);
   const isSearchActive = searchState.active;
@@ -59,6 +69,9 @@ export function Navbar() {
             type="search"
             placeholder="Add to your search"
             className="mr-2 flex-1 border-0 bg-neutral-200"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           />
 
           {/* FaceSearch Dialog */}
@@ -69,6 +82,7 @@ export function Navbar() {
             className="text-muted-foreground hover:bg-accent dark:hover:bg-accent/50 hover:text-foreground mx-1 cursor-pointer rounded-sm p-2"
             title="Search"
             aria-label="Search"
+            onClick={handleSearch}
           >
             <Search className="h-4 w-4" />
           </button>

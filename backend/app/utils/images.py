@@ -18,6 +18,7 @@ from app.database.images import (
 )
 from app.models.FaceDetector import FaceDetector
 from app.models.ObjectClassifier import ObjectClassifier
+from app.services.search import SearchService
 from app.logging.setup_logging import get_logger
 
 logger = get_logger(__name__)
@@ -76,7 +77,27 @@ def image_util_process_folder_images(folder_data: List[Tuple[str, int, bool]]) -
 
         # Step 5: Bulk insert all new records if any exist
         if all_image_records:
-            return db_bulk_insert_images(all_image_records)
+            success = db_bulk_insert_images(all_image_records)
+            if success:
+                # Step 6: Index new images for search
+                try:
+                    search_service = SearchService.get_instance()
+                    indexed_count = 0
+                    for record in all_image_records:
+                        image_id = record['id']
+                        image_path = record['path']
+                        # Check if already in index (optimization: only add if not present, but for now we trust the list of NEW records)
+                        # Actually image_records are newly prepared ones.
+                        if search_service.add_image(image_id, image_path):
+                            indexed_count += 1
+                    
+                    if indexed_count > 0:
+                        search_service.save_index()
+                        logger.info(f"Indexed {indexed_count} new images for search.")
+                except Exception as e:
+                    logger.error(f"Error indexing images for search: {e}")
+            
+            return success
 
         return True  # No images to process is not an error
     except Exception as e:
