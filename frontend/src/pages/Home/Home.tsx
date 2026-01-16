@@ -42,7 +42,7 @@ export const Home = () => {
 
   // Semantic Search Query
   const {
-    data: searchData,
+    successData: searchResults,
     isLoading: isSearchLoading,
     isSuccess: isSearchSuccess,
     isError: isSearchError,
@@ -78,9 +78,9 @@ export const Home = () => {
   useEffect(() => {
     if (isSearchActive && !!queryText && isSearchSuccess) {
       // searchData is directly the array of images
-      dispatch(setImages(searchData as Image[]));
+      dispatch(setImages(searchResults as Image[]));
     }
-  }, [searchData, isSearchSuccess, isSearchActive, queryText, dispatch]);
+  }, [searchResults, isSearchSuccess, isSearchActive, queryText, dispatch]);
 
   const title =
     isSearchActive && images.length > 0

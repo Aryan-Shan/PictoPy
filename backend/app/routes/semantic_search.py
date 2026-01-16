@@ -76,20 +76,33 @@ def process_indexing_task():
 @router.get("/status")
 def get_status():
     """Get current indexing status."""
-    return db_get_indexing_status()
+    status = db_get_indexing_status()
+    return {
+        "success": True,
+        "message": "Indexing status retrieved successfully",
+        "data": status
+    }
 
 @router.post("/index")
 async def trigger_indexing(background_tasks: BackgroundTasks):
     """Trigger background indexing of images."""
     status = db_get_indexing_status()
     if status["is_active"]:
-        raise HTTPException(status_code=409, detail="Indexing is already in progress.")
+        raise HTTPException(status_code=409, detail={
+            "success": False,
+            "error": "Conflict",
+            "message": "Indexing is already in progress."
+        })
     
     db_update_indexing_status(is_active=True, error=None)
     background_tasks.add_task(process_indexing_task)
-    return {"message": "Indexing started in background"}
+    return {
+        "success": True,
+        "message": "Indexing started in background",
+        "data": None
+    }
 
-@router.get("/search", response_model=List[SearchResponse])
+@router.get("/search")
 async def search(q: str):
     """Search images by text query."""
     if not q:
@@ -123,9 +136,17 @@ async def search(q: str):
                     score=result['score']
                 ))
         
-        return response
+        return {
+            "success": True,
+            "message": f"Found {len(response)} results",
+            "data": response
+        }
         
     except Exception as e:
         logger.error(f"Search failed: {e}")
         # Return error details to help debugging
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+        raise HTTPException(status_code=500, detail={
+            "success": False,
+            "error": "Internal Server Error",
+            "message": f"Search failed: {str(e)}"
+        })

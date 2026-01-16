@@ -78,15 +78,17 @@ const ApplicationControlsCard: React.FC = () => {
 
   useMutationFeedback(indexMutation, indexFeedbackOptions);
 
-  const { data: indexingStatus } = usePictoQuery({
+  const { successData: indexingStatus } = usePictoQuery({
     queryKey: ['indexing-status'],
     queryFn: getIndexingStatus,
     refetchInterval: 3000,
   });
 
   const isIndexing = indexingStatus?.is_active;
-  const progressValue = indexingStatus?.total > 0
-    ? (indexingStatus.current / indexingStatus.total) * 100
+  const total = indexingStatus?.total || 0;
+  const current = indexingStatus?.current || 0;
+  const progressValue = total > 0
+    ? (current / total) * 100
     : 0;
 
   const onGlobalReclusterClick = () => {

@@ -1369,13 +1369,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SearchResponse"
-                  },
-                  "title": "Response Search Semantic Search Get"
-                }
+                "schema": {}
               }
             }
           },
@@ -2511,67 +2505,6 @@
           "success"
         ],
         "title": "RenameClusterResponse"
-      },
-      "SearchResponse": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "path": {
-            "type": "string",
-            "title": "Path"
-          },
-          "folder_id": {
-            "type": "string",
-            "title": "Folder Id"
-          },
-          "thumbnailPath": {
-            "type": "string",
-            "title": "Thumbnailpath"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/MetadataModel"
-          },
-          "isTagged": {
-            "type": "boolean",
-            "title": "Istagged"
-          },
-          "isFavourite": {
-            "type": "boolean",
-            "title": "Isfavourite"
-          },
-          "tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tags"
-          },
-          "score": {
-            "type": "number",
-            "title": "Score"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "path",
-          "folder_id",
-          "thumbnailPath",
-          "metadata",
-          "isTagged",
-          "isFavourite",
-          "score"
-        ],
-        "title": "SearchResponse"
       },
       "SuccessResponse": {
         "properties": {

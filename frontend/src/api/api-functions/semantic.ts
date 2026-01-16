@@ -1,11 +1,18 @@
 import { apiClient } from '../axiosConfig';
 
-export const semanticSearch = async (query: string) => {
+interface BackendRes<T = any> {
+    success: boolean;
+    error?: string;
+    message?: string;
+    data?: T;
+}
+
+export const semanticSearch = async (query: string): Promise<BackendRes<any>> => {
     const response = await apiClient.get(`/semantic/search?q=${encodeURIComponent(query)}`);
     return response.data;
 };
 
-export const triggerIndexing = async (): Promise<{ message: string }> => {
+export const triggerIndexing = async (): Promise<BackendRes<{ message: string }>> => {
     const response = await apiClient.post('/semantic/index');
     return response.data;
 };
@@ -17,7 +24,7 @@ export interface IndexingStatus {
     error: string | null;
 }
 
-export const getIndexingStatus = async (): Promise<IndexingStatus> => {
+export const getIndexingStatus = async (): Promise<BackendRes<IndexingStatus>> => {
     const response = await apiClient.get('/semantic/status');
     return response.data;
 };
